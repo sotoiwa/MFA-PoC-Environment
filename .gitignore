@@ -1,0 +1,12 @@
+.env
+.DS_Store
+.idea/
+.vscode/
+.env/
+venv/
+.venv
+__pycache__/
+cdk.out/
+cdk.json
+setup-DFSN-servers.*
+password.*
