@@ -37,7 +37,7 @@ CDKプロジェクトをローカルにクローンします。
 
 ```shell
 git clone https://github.com/sotoiwa/MFA-PoC-Environment.git
-cd DFSR-PoC-Environment
+cd MFA-PoC-Environment
 ```
 
 ### Pythonの準備
