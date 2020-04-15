@@ -4,6 +4,7 @@
 
 - [Google Authenticator を使って Amazon WorkSpaces に多要素認証ログイン](https://aws.typepad.com/sajp/2014/10/google-authenticator.html)
 - [RADIUSサーバーを構築して、WorkSpacesを多要素認証で運用する](http://blog.serverworks.co.jp/tech/2020/01/21/workspaces-use-radius-mfa/)
+- [Azure MFAサーバーを使用したAmazon WorkSpacesの多要素認証](https://aws.amazon.com/jp/blogs/news/amazon-workspaces-multi-factor-authentication-using-azure-mfa/)
 
 ## 前提
 
