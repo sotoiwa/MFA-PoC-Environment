@@ -44,20 +44,6 @@ class EC2Stack(core.Stack):
             iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSSMManagedInstanceCore'))
         bastion_windows.add_security_group(bastion_sg)
 
-        # ドメインコントローラ用EC2
-        domain_controller_windows = ec2.Instance(
-            self, 'DomainController',
-            instance_type=ec2.InstanceType('t3.large'),
-            machine_image=ec2.MachineImage.latest_windows(
-                version=ec2.WindowsVersion.WINDOWS_SERVER_2016_JAPANESE_FULL_BASE),
-            key_name=self.node.try_get_context('key_name'),
-            vpc=vpc,
-            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE),
-            security_group=internal_sg
-        )
-        domain_controller_windows.role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSSMManagedInstanceCore'))
-
         # Radius用EC2ホスト
         radius_host = ec2.Instance(
             self, 'RadiusHost',
