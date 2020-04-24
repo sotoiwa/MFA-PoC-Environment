@@ -1,5 +1,7 @@
 # MFA-PoC-Environment
 
+![](architecture.png)
+
 ## 参考リンク
 
 - [Google Authenticator を使って Amazon WorkSpaces に多要素認証ログイン](https://aws.typepad.com/sajp/2014/10/google-authenticator.html)
@@ -93,7 +95,7 @@ aws ds describe-directories | \
   jq -r '.DirectoryDescriptions[] | select( .Name == "corp.example.com" ) | .DnsIpAddrs[]'
 ```
 
-踏み台インスタンスにRDPし、PowerShellを起動します。
+インスタンスにRDPし、PowerShellを起動します。
 あるいは、セッションマネージャーでPowerShellを起動します。
 
 AD管理に必要なツールをPowerShellでインストールします。
@@ -128,8 +130,11 @@ Add-Computer -DomainName corp.example.com -Credential $Credential
 Restart-Computer -Force
 ```
 
+## RADIUSサーバーの構築
 
-## RADIUSサーバーの設定
+踏み台経由でSSHログイン、あるいは、セッションマネージャーで接続します。
+
+### RADIUSのインストールと設定
 
 epelリポジトリを有効化します。
 
@@ -207,7 +212,7 @@ session required pam_permit.so
 RADIUSがプロトコルを受け付けるクライアントについての設定をします。secretは適当に設定します。
 
 ```
-cat <<EOF | sudo tee -a /etc/raddb/clients.conf 
+cat <<EOF | sudo tee -a /etc/raddb/clients.conf
 client vpc {
         ipaddr = 10.1.0.0/16
         secret = XXXXXXXXXXXXXX
@@ -228,7 +233,7 @@ sudo systemctl enable radiusd
 sudo systemctl start radiusd
 ```
 
-## RADIUSサーバーが認証するユーザーの設定
+### RADIUSが認証するユーザーの設定
 
 RADIUSサーバーはActive Directoryと連携している訳ではないので、RADIUSサーバー上にもActive Directoryと同じユーザーの追加が必要です。
 
@@ -290,9 +295,9 @@ Do you want to enable rate-limiting? (y/n) y
 [ec2-user@ip-10-1-2-126 ~]$
 ```
 
-## セキュリティグループ
+### セキュリティグループの設定
 
-Managed ADのENIを探し、セキュリティグループを確認し、Radiusサーバーのセキュリティグループへのアクセス（1812/UDP）を許可します。
+Managed ADのENIを探し、セキュリティグループを確認し、　Managed ADからRadiusサーバーのセキュリティグループへのアクセス（1812/UDP）を許可します。
 Radiusサーバー側のインバウンドと、Managed ADの側のアウトバウンドを両方設定する必要があります。
 
 ## WorkSpaces
@@ -305,13 +310,13 @@ WorkSpacesコンソールで、「ディレクトリ」からManaged ADを「登
 
 ### WorkSpacesの作成
 
-「WorkSpaces」から「WorkSpaceの起動」を行います。この画面でユーザーを作成できます。
+「WorkSpaces」から「WorkSpaceの起動」を行います。この画面でユーザーを作成することもできます。既にユーザーを作成済みの場合は検索します。
 
 WorkSpaceが起動したら一度ログインして確認します。
 
 ### MFAの有効化
 
-MFAの有効化はAD Connectorの場合はWorkSpacesコンソールですが、Managed ADの場合はDirectory Serviceコンソールで行います。
+MFAの有効化はAD Connectorの場合はWorkSpacesコンソールでも設定できますが、Managed ADの場合はDirectory Serviceコンソールで行います。
 
 |項目|値|備考|
 |---|---|---|
@@ -323,4 +328,4 @@ MFAの有効化はAD Connectorの場合はWorkSpacesコンソールですが、M
 |サーバータイムアウト（秒単位)|30||
 |RADIUS リクエストの最大再試行数|4||
 
-もう一度WorkSpacesにログイン確認します。
+もう一度WorkSpacesにログインし、MFAが要求されることを確認します。
